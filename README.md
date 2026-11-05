@@ -32,6 +32,6 @@ Fallback: zip the folder and upload it in the Cloudflare dashboard (Workers & Pa
   (see its README). Regenerate there and copy the SVGs here.
 * DNS: `www.tetraenergies.com` is a CNAME at GoDaddy to `tetraenergies-web.pages.dev`; the bare domain forwards to
   `https://www.tetraenergies.com`. Email for `tetraenergies.com` (Microsoft 365) stays at GoDaddy and is not affected
-  by anything here. `tetraenergies.net` is on Cloudflare and carries the portal and the volumetrics toolkit.
-* The volumetrics toolkit itself is in the separate repository `mobiusadvisory/tetra-volumetrics`.
+  by anything here. `tetraenergies.net` is on Cloudflare and carries the portal and the Tetra toolkit (toolkit.tetraenergies.net: Volumetrics and Portfolio model; the old volumetrics.tetraenergies.net redirects there).
+* The Tetra toolkit itself (Volumetrics and Portfolio model) is in the separate repository `mobiusadvisory/tetra-volumetrics`; the server updates itself from its `main` branch.
 * UK English throughout the English page; Peruvian Spanish (es-PE) on the Spanish page.

@@ -1,0 +1,27 @@
+# Publishes portal/ to the Cloudflare Pages project "tetraenergies-portal"
+# (portal.tetraenergies.net, behind Cloudflare Access) whenever a change to portal/ reaches main.
+name: Deploy portal
+
+on:
+  push:
+    branches: [main]
+    paths: ["portal/**", ".github/workflows/deploy-portal.yml"]
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-portal
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - name: Publish to Cloudflare Pages
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: 4dc590b7b5a72161b18899cae85de172
+          command: pages deploy portal --project-name=tetraenergies-portal --branch=main --commit-dirty=true

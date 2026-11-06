@@ -24,7 +24,8 @@ Fallback: zip the folder and upload it in the Cloudflare dashboard (Workers & Pa
 ## Notes
 
 * **Public website shows only publicly known information.** Do not add CPR volumes, investment amounts, investor
-  terms, well locations (other than the published discovery markers), or other team members or advisers.
+  terms, well locations (other than the published discovery markers), or advisers. Team profiles (agreed Nov 2026,
+  no photos): Charles Wood, Matthew Hawthorn, Juan Carlos Quinto, in that order.
 * **English and Spanish pages must be kept in step.** `website/index.html` and `website/es/index.html` share the same
   layout; the Spanish page uses `../` paths for images and `maps/es/` for the Spanish maps.
 * **Maps** (`website/maps/*.svg`, Spanish in `website/maps/es/`) are generated, not hand-edited. The master copies and

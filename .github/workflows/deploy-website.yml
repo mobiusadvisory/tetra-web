@@ -1,10 +1,11 @@
-# Publishes website/ to the Cloudflare Pages project "tetraenergies-web"
-# (www.tetraenergies.com) whenever a change to website/ reaches main.
+# Publishes website/ to the Cloudflare Pages project "tetraenergies-web".
+# main    -> production (www.tetraenergies.com)
+# preview -> preview copy at https://preview.tetraenergies-web.pages.dev (for review before going live)
 name: Deploy website
 
 on:
   push:
-    branches: [main]
+    branches: [main, preview]
     paths: ["website/**", ".github/workflows/deploy-website.yml"]
   workflow_dispatch:
 
@@ -24,4 +25,4 @@ jobs:
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: 4dc590b7b5a72161b18899cae85de172
-          command: pages deploy website --project-name=tetraenergies-web --branch=main --commit-dirty=true
+          command: pages deploy website --project-name=tetraenergies-web --branch=${{ github.ref_name }} --commit-dirty=true

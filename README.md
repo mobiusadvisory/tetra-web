@@ -21,6 +21,12 @@ The workflows need one repository secret, `CLOUDFLARE_API_TOKEN`: a Cloudflare A
 
 Fallback: zip the folder and upload it in the Cloudflare dashboard (Workers & Pages › project › Create deployment).
 
+## Oil price history tool
+
+`portal/tools/oil-prices/` is a static chart page reading `data.json`. The master data is in `data/oil-prices/`;
+`tools/oil-prices/update_data.py` adds new prices and rebuilds `data.json`, and only ever adds or corrects rows, never
+removes them. The workflow `update-oil-prices.yml` runs this on weekdays and publishes the portal if anything changed.
+
 ## Notes
 
 * **Public website shows only publicly known information.** Do not add CPR volumes, investment amounts, investor

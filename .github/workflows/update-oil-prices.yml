@@ -1,0 +1,45 @@
+# Adds the latest oil prices and CPI to data/oil-prices, rebuilds the portal chart data and publishes the portal.
+# A push made with the default token does not trigger deploy-portal.yml, so this workflow publishes for itself.
+name: Update oil prices
+
+on:
+  schedule:
+    - cron: "23 7 * * 1-5"
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-portal
+  cancel-in-progress: false
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Refresh data
+        run: python tools/oil-prices/update_data.py
+      - name: Commit if changed
+        id: commit
+        run: |
+          git add data/oil-prices portal/tools/oil-prices/data.json
+          if git diff --cached --quiet; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+          else
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git commit -m "Update oil price data"
+            git push
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          fi
+      - name: Publish to Cloudflare Pages
+        if: steps.commit.outputs.changed == 'true'
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: 4dc590b7b5a72161b18899cae85de172
+          command: pages deploy portal --project-name=tetraenergies-portal --branch=main --commit-dirty=true

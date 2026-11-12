@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -150 1603 400" width="1603" height="400" role="img" aria-label="Tetra Energies">
+<defs>
+<linearGradient id="hR" gradientUnits="userSpaceOnUse" x1="20" y1="0" x2="280" y2="0"><stop offset="0" stop-color="#FF6A74"/><stop offset="1" stop-color="#B3102A"/></linearGradient>
+<linearGradient id="hY" gradientUnits="userSpaceOnUse" x1="20" y1="0" x2="280" y2="0"><stop offset="0" stop-color="#FFD54A"/><stop offset="1" stop-color="#D98A00"/></linearGradient>
+<linearGradient id="hB" gradientUnits="userSpaceOnUse" x1="193.21" y1="0" x2="279.81" y2="0"><stop offset="0" stop-color="#1F5DBA"/><stop offset="1" stop-color="#041A45"/></linearGradient>
+</defs>
+<g fill="#0E1B2C"><rect x="0" y="0" width="72" height="9"/><rect x="31.5" y="0" width="9" height="100"/><rect x="172" y="0" width="72" height="9"/><rect x="203.5" y="0" width="9" height="100"/><polygon points="293.75,50 304.35,50 331,100 320.4,100"/><polygon points="341,100 380,-4 419,100 409.39,100 380,21.63 350.61,100"/><rect x="366.36" y="45.5" width="27.28" height="9"/><rect x="595" y="0" width="9" height="100"/><rect x="658" y="0" width="9" height="100"/><polygon points="595,0 605.64,0 667,100 656.36,100"/><polygon points="827.75,50 838.35,50 865,100 854.4,100"/><rect x="1016" y="0" width="9" height="100"/></g>
+<g fill="none" stroke="#0E1B2C" stroke-width="9" stroke-miterlimit="10"><path d="M155,4.5 H99.5 V95.5 H155 M99.5,50 H151"/><path d="M271.5,100 V4.5 H299.75 A22.75,22.75 0 0 1 299.75,50 H271.5"/><path d="M561,4.5 H505.5 V95.5 H561 M505.5,50 H557"/><path d="M767,4.5 H711.5 V95.5 H767 M711.5,50 H763"/><path d="M805.5,100 V4.5 H833.75 A22.75,22.75 0 0 1 833.75,50 H805.5"/><path d="M967.68,19.22 A46,46 0 1 0 979.5,50 H939.5"/><path d="M1125,4.5 H1069.5 V95.5 H1125 M1069.5,50 H1121"/><path d="M1201.5,17.5 C1198,8 1190,3.5 1179,3.5 C1166,3.5 1157,10.5 1157,25.5 C1157,39 1167.5,45.4 1179,50 C1191.5,55 1202,61 1202,74 C1202,88.5 1192,96.5 1179,96.5 C1166.5,96.5 1157.5,91.5 1154,82"/></g>
+<g transform="translate(1230.33,-176.67) scale(1.3333)">
+<polygon points="20,170 279.81,20 193.21,170" fill="url(#hR)"/>
+<polygon points="20,170 279.81,320 193.21,170" fill="url(#hY)"/>
+<polygon points="279.81,20 279.81,320 193.21,170" fill="url(#hB)"/>
+<g stroke="#FFFFFF" stroke-width="5"><line x1="193.21" y1="170" x2="20" y2="170"/><line x1="193.21" y1="170" x2="279.81" y2="20"/><line x1="193.21" y1="170" x2="279.81" y2="320"/></g>
+</g>
+</svg>

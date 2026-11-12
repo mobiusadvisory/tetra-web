@@ -4,6 +4,9 @@
 Stored CSVs in data/oil-prices are the master copy. Feeds only add or correct rows;
 a row is never removed, because the EIA daily files lost about 1,600 historical rows
 in September 2026. With --offline, no feeds are read.
+
+Feeds are read in order and later ones win on any date they share, so the most
+authoritative source (EIA) goes last. FRED often times out from GitHub's runners.
 """
 import csv, datetime as dt, io, json, sys, urllib.request
 from pathlib import Path
@@ -12,10 +15,11 @@ ROOT = Path(__file__).resolve().parents[2]
 DATA, OUT = ROOT / "data/oil-prices", ROOT / "portal/tools/oil-prices/data.json"
 FRED = "https://fred.stlouisfed.org/graph/fredgraph.csv?id="
 HUB = "https://raw.githubusercontent.com/datasets/"
+EIA = "https://www.eia.gov/dnav/pet/hist_xls/"
 FEEDS = {
-    "brent_daily.csv": ("price", FRED + "DCOILBRENTEU", HUB + "oil-prices/main/data/brent-daily.csv"),
-    "wti_daily.csv": ("price", FRED + "DCOILWTICO", HUB + "oil-prices/main/data/wti-daily.csv"),
-    "us_cpi_monthly.csv": ("cpi", FRED + "CPIAUCNS", HUB + "cpi-us/main/data/cpiai.csv"),
+    "brent_daily.csv": ("price", HUB + "oil-prices/main/data/brent-daily.csv", FRED + "DCOILBRENTEU", EIA + "RBRTEd.xls"),
+    "wti_daily.csv": ("price", HUB + "oil-prices/main/data/wti-daily.csv", FRED + "DCOILWTICO", EIA + "RWTCd.xls"),
+    "us_cpi_monthly.csv": ("cpi", HUB + "cpi-us/main/data/cpiai.csv", FRED + "CPIAUCNS"),
 }
 
 
@@ -24,10 +28,29 @@ def read(name):
         return {r["date"]: float(r[list(r)[1]]) for r in csv.DictReader(f)}
 
 
+def parse_eia(raw):
+    """EIA history workbook: sheet 'Data 1', three header rows, Excel dates in column A."""
+    import xlrd
+    book = xlrd.open_workbook(file_contents=raw)
+    sheet = book.sheet_by_name("Data 1")
+    out = {}
+    for i in range(3, sheet.nrows):
+        d, v = sheet.cell_value(i, 0), sheet.cell_value(i, 1)
+        if isinstance(d, float) and isinstance(v, float):
+            out[xlrd.xldate_as_datetime(d, book.datemode).date().isoformat()] = v
+    return out
+
+
 def fetch(url):
     req = urllib.request.Request(url, headers={"User-Agent": "tetra-oil-price-update/1.0"})
-    with urllib.request.urlopen(req, timeout=60) as r:
-        rows = list(csv.reader(io.StringIO(r.read().decode())))
+    with urllib.request.urlopen(req, timeout=40) as r:
+        raw = r.read()
+    if url.endswith(".xls"):
+        out = parse_eia(raw)
+        if len(out) < 500:
+            raise ValueError("feed too short")
+        return out
+    rows = list(csv.reader(io.StringIO(raw.decode())))
     out = {}
     for row in rows[1:]:
         try:

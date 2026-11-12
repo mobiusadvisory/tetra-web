@@ -22,7 +22,9 @@ jobs:
         with:
           python-version: "3.12"
       - name: Refresh data
-        run: python tools/oil-prices/update_data.py
+        run: |
+          pip install --quiet xlrd==2.0.1
+          python tools/oil-prices/update_data.py
       - name: Commit if changed
         id: commit
         run: |

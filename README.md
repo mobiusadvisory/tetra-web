@@ -27,6 +27,13 @@ Fallback: zip the folder and upload it in the Cloudflare dashboard (Workers & Pa
 `tools/oil-prices/update_data.py` adds new prices and rebuilds `data.json`, and only ever adds or corrects rows, never
 removes them. The workflow `update-oil-prices.yml` runs this on weekdays and publishes the portal if anything changed.
 
+## Well spacing tool
+
+`portal/tools/well-spacing/index.html` is a single self-contained page with no data files and no build step. All the
+calculations run in the browser. It models the pressure drawdown and interference of wells in a homogeneous reservoir
+(oil or dry gas, line-source with superposition, closed or open boundaries) and the NPV against well count. The
+method and its limits are on the page's "Method and assumptions" tab.
+
 ## Notes
 
 * **Public website shows only publicly known information.** Do not add CPR volumes, investment amounts, investor

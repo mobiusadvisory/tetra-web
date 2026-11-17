@@ -1,0 +1,611 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Well spacing and drawdown | Tetra Energies portal</title>
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--navy:#0E1B2C;--slate:#4C535C;--mist:#EEF1F5;--blue:#1F5BB5;--red:#D7263A;--yellow:#F7B500;--orange:#F07A10;--green:#00995A;--purple:#6A3FC2;--rule:#C9CFD6;--grid:#E3E7EC}
+*{box-sizing:border-box}
+body{margin:0;font-family:Inter,Arial,sans-serif;color:var(--navy);background:#fff;font-size:14px;line-height:1.4}
+header{display:flex;align-items:center;gap:24px;padding:16px 28px;border-bottom:1px solid var(--rule);flex-wrap:wrap}
+header svg.logo{height:34px;width:auto}
+header .ttl{flex:1;min-width:260px}
+header h1{font-size:20px;font-weight:600;margin:0}
+header p{margin:2px 0 0;color:var(--slate);font-size:12.5px}
+.seg{display:inline-flex;border:1px solid var(--rule);border-radius:8px;overflow:hidden}
+.seg button{border:0;background:#fff;padding:6px 12px;font:inherit;font-size:13px;color:var(--slate);cursor:pointer}
+.seg button.on{background:var(--navy);color:#fff}
+.wrap{display:grid;grid-template-columns:330px 1fr;min-height:calc(100vh - 70px)}
+aside{background:var(--mist);padding:16px 18px 40px;border-right:1px solid var(--rule);overflow:auto}
+aside h3{font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--slate);margin:18px 0 8px}
+aside h3:first-child{margin-top:0}
+.row{display:grid;grid-template-columns:1fr 92px 58px;align-items:center;gap:6px;margin:4px 0}
+.row label{font-size:13px}
+.row input[type=number]{width:100%;padding:4px 6px;border:1px solid var(--rule);border-radius:5px;font:inherit;font-size:13px;text-align:right;background:#fff;color:var(--navy)}
+.row .u{font-size:11.5px;color:var(--slate)}
+.chk{display:flex;gap:8px;align-items:center;font-size:13px;margin:6px 0}
+.note{font-size:11.5px;color:var(--slate);margin:4px 0 0}
+main{padding:18px 26px 40px;min-width:0}
+.tabs{display:flex;gap:4px;border-bottom:1px solid var(--rule);margin-bottom:16px;flex-wrap:wrap}
+.tabs button{border:0;background:none;padding:9px 14px;font:inherit;font-weight:500;color:var(--slate);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px}
+.tabs button.on{color:var(--navy);border-bottom-color:var(--blue)}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:10px;margin-bottom:16px}
+.card{border:1px solid var(--rule);border-radius:8px;padding:10px 12px}
+.card .k{font-size:11.5px;color:var(--slate)}
+.card .v{font-size:19px;font-weight:600;margin-top:2px;font-variant-numeric:tabular-nums}
+.card .s{font-size:11.5px;color:var(--slate)}
+.card.warn{border-color:var(--red)} .card.warn .v{color:var(--red)}
+.card.good .v{color:var(--green)}
+.tslider{display:flex;align-items:center;gap:12px;margin:0 0 12px;flex-wrap:wrap}
+.tslider input[type=range]{flex:1;min-width:200px;accent-color:var(--blue)}
+.mapbox{position:relative;display:inline-block;border:1px solid var(--rule)}
+#tip{position:absolute;pointer-events:none;background:var(--navy);color:#fff;font-size:12px;padding:4px 7px;border-radius:4px;display:none;white-space:nowrap}
+.legend{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--slate);margin:8px 0}
+.legend canvas{border:1px solid var(--rule)}
+h2{font-size:16px;font-weight:600;margin:22px 0 6px}
+h2:first-child{margin-top:0}
+.cap{font-size:12px;color:var(--slate);margin:4px 0 10px;max-width:900px}
+svg.chart{width:100%;display:block}
+table{border-collapse:collapse;font-size:12.5px;font-variant-numeric:tabular-nums;width:100%}
+th{background:var(--navy);color:#fff;font-weight:600;text-align:right;padding:6px 8px;vertical-align:bottom}
+td{white-space:nowrap}
+th:first-child,td:first-child{text-align:left}
+td{padding:4px 8px;border-bottom:1px solid var(--rule);text-align:right}
+tr.opt td{background:#E6F4EE;font-weight:600}
+tr.sel td{background:#E8EEF8}
+.tblwrap{overflow:auto;max-height:520px}
+.btn{border:1px solid var(--navy);background:#fff;color:var(--navy);border-radius:6px;padding:6px 12px;font:inherit;font-size:13px;cursor:pointer}
+.btn:hover{background:var(--navy);color:#fff}
+.method{max-width:900px}
+.method p,.method li{font-size:13.5px}
+.method code{background:var(--mist);padding:1px 5px;border-radius:4px;font-size:12.5px}
+.eq{background:var(--mist);padding:8px 12px;border-radius:6px;font-family:Consolas,monospace;font-size:12.5px;margin:6px 0;overflow:auto}
+.msg{color:var(--red);font-size:13px;margin:8px 0}
+.hide{display:none}
+body.gas .oil{display:none!important}body:not(.gas) .gas{display:none!important}
+.fluid{display:flex;align-items:center;gap:10px;margin-bottom:14px}.fluid .seg button{padding:6px 18px;font-weight:500}
+footer{font-size:11px;color:var(--slate);padding:10px 28px;border-top:1px solid var(--rule)}
+@media(max-width:900px){.wrap{grid-template-columns:1fr}aside{border-right:0;border-bottom:1px solid var(--rule)}}
+</style>
+</head>
+<body>
+<header>
+<svg class="logo" viewBox="-10 -160 1623 420" aria-label="Tetra Energies">
+<defs>
+<linearGradient id="gR" gradientUnits="userSpaceOnUse" x1="20" y1="0" x2="280" y2="0"><stop offset="0" stop-color="#FF6A74"/><stop offset="1" stop-color="#B3102A"/></linearGradient>
+<linearGradient id="gY" gradientUnits="userSpaceOnUse" x1="20" y1="0" x2="280" y2="0"><stop offset="0" stop-color="#FFD54A"/><stop offset="1" stop-color="#D98A00"/></linearGradient>
+<linearGradient id="gB" gradientUnits="userSpaceOnUse" x1="193.21" y1="0" x2="279.81" y2="0"><stop offset="0" stop-color="#1F5DBA"/><stop offset="1" stop-color="#041A45"/></linearGradient>
+</defs>
+<g fill="#0E1B2C"><rect x="0" y="0" width="72" height="9"/><rect x="31.5" y="0" width="9" height="100"/><rect x="172" y="0" width="72" height="9"/><rect x="203.5" y="0" width="9" height="100"/><polygon points="293.75,50 304.35,50 331,100 320.4,100"/><polygon points="341,100 380,-4 419,100 409.39,100 380,21.63 350.61,100"/><rect x="366.36" y="45.5" width="27.28" height="9"/><rect x="595" y="0" width="9" height="100"/><rect x="658" y="0" width="9" height="100"/><polygon points="595,0 605.64,0 667,100 656.36,100"/><polygon points="827.75,50 838.35,50 865,100 854.4,100"/><rect x="1016" y="0" width="9" height="100"/></g>
+<g fill="none" stroke="#0E1B2C" stroke-width="9" stroke-miterlimit="10"><path d="M155,4.5 H99.5 V95.5 H155 M99.5,50 H151"/><path d="M271.5,100 V4.5 H299.75 A22.75,22.75 0 0 1 299.75,50 H271.5"/><path d="M561,4.5 H505.5 V95.5 H561 M505.5,50 H557"/><path d="M767,4.5 H711.5 V95.5 H767 M711.5,50 H763"/><path d="M805.5,100 V4.5 H833.75 A22.75,22.75 0 0 1 833.75,50 H805.5"/><path d="M967.68,19.22 A46,46 0 1 0 979.5,50 H939.5"/><path d="M1125,4.5 H1069.5 V95.5 H1125 M1069.5,50 H1121"/><path d="M1201.5,17.5 C1198,8 1190,3.5 1179,3.5 C1166,3.5 1157,10.5 1157,25.5 C1157,39 1167.5,45.4 1179,50 C1191.5,55 1202,61 1202,74 C1202,88.5 1192,96.5 1179,96.5 C1166.5,96.5 1157.5,91.5 1154,82"/></g>
+<g transform="translate(1230.33,-176.67) scale(1.3333)">
+<polygon points="20,170 279.81,20 193.21,170" fill="url(#gR)"/>
+<polygon points="20,170 279.81,320 193.21,170" fill="url(#gY)"/>
+<polygon points="279.81,20 279.81,320 193.21,170" fill="url(#gB)"/>
+<g stroke="#fff" stroke-width="5"><line x1="193.21" y1="170" x2="16" y2="170"/><line x1="193.21" y1="170" x2="281" y2="18"/><line x1="193.21" y1="170" x2="281" y2="322"/></g>
+</g>
+</svg>
+<div class="ttl"><h1>Well spacing and drawdown</h1>
+<p>Pressure field around producing wells, well interference and development spacing for a homogeneous reservoir of undersaturated oil or dry gas</p></div>
+<div><a href="/" style="font-size:14px;font-weight:500;color:var(--slate);text-decoration:none;margin-right:18px">← Portal</a><span class="note" style="margin-right:8px">Lengths</span><span class="seg" id="unitSeg"><button data-u="ft" class="on">ft</button><button data-u="m">m</button></span></div>
+</header>
+
+<div class="wrap">
+<aside id="inputs">
+<div class="fluid"><span style="font-weight:600">Fluid</span><span class="seg" id="fluidSeg"><button data-f="oil" class="on">Oil</button><button data-f="gas">Gas</button></span></div>
+<h3>Reservoir</h3>
+<div class="row"><label for="k">Permeability, k</label><input type="number" id="k" value="50" step="any"><span class="u">mD</span></div>
+<div class="row"><label for="h">Net thickness, h</label><input type="number" id="h" value="50" step="any" data-len><span class="u lu">ft</span></div>
+<div class="row"><label for="phi">Porosity, φ</label><input type="number" id="phi" value="0.20" step="0.01"><span class="u">frac</span></div>
+<div class="row"><label for="sw">Water saturation, Sw</label><input type="number" id="sw" value="0.25" step="0.01"><span class="u">frac</span></div>
+<div class="row oil"><label for="mu">Oil viscosity, μ</label><input type="number" id="mu" value="2" step="any"><span class="u">cP</span></div>
+<div class="row oil"><label for="bo">Formation vol. factor, Bo</label><input type="number" id="bo" value="1.2" step="0.01"><span class="u">rb/STB</span></div>
+<div class="row oil"><label for="ct">Total compressibility, ct</label><input type="number" id="ct" value="1.5e-5" step="any"><span class="u">1/psi</span></div>
+<div class="row gas"><label for="gg">Gas gravity (air = 1)</label><input type="number" id="gg" value="0.65" step="0.01"><span class="u"></span></div>
+<div class="row gas"><label for="tf">Reservoir temperature</label><input type="number" id="tf" value="200" step="any"><span class="u">°F</span></div>
+<div class="row gas"><label for="cf">Rock compressibility</label><input type="number" id="cf" value="4e-6" step="any"><span class="u">1/psi</span></div>
+<div class="row"><label for="pi">Initial pressure, pi</label><input type="number" id="pi" value="3000" step="any"><span class="u">psia</span></div>
+<div class="row"><label for="pmin">Minimum flowing pressure</label><input type="number" id="pmin" value="1000" step="any"><span class="u">psia</span></div>
+<p class="note oil">Lowest allowable flowing bottomhole pressure, e.g. bubble point or lift limit.</p><p class="note gas">Lowest allowable flowing bottomhole pressure, e.g. set by line or compression pressure. Also the abandonment pressure.</p>
+<div class="row"><label for="rw">Wellbore radius, rw</label><input type="number" id="rw" value="0.35" step="any" data-len><span class="u lu">ft</span></div>
+<div class="row"><label for="skin">Skin, s</label><input type="number" id="skin" value="0" step="any"><span class="u"></span></div>
+<div class="row gas"><label for="dnd">Non-Darcy coeff., D</label><input type="number" id="dnd" value="0" step="any"><span class="u">d/Mscf</span></div>
+<p class="note gas" id="gasNote"></p>
+
+<h3>Field and wells</h3>
+<div class="row"><label for="lx">Field length (x)</label><input type="number" id="lx" value="10000" step="any" data-len><span class="u lu">ft</span></div>
+<div class="row"><label for="ly">Field width (y)</label><input type="number" id="ly" value="6500" step="any" data-len><span class="u lu">ft</span></div>
+<label class="chk"><input type="checkbox" id="closed" checked> Closed (no-flow) field boundaries</label>
+<div class="row"><label for="nw">Number of wells</label><input type="number" id="nw" value="6" min="1" max="60" step="1"><span class="u">wells</span></div>
+<div class="row gas"><label for="qg">Rate per well, q</label><input type="number" id="qg" value="10" step="any"><span class="u">MMscf/d</span></div>
+<div class="row oil"><label for="q">Rate per well, q</label><input type="number" id="q" value="500" step="any"><span class="u">STB/d</span></div>
+<div class="row"><label for="t">Time on production</label><input type="number" id="t" value="180" step="any"><span class="u">days</span></div>
+<p class="note">Wells are placed on a regular grid pattern and produce at the same constant rate from time zero.</p>
+
+<h3>Development and economics</h3>
+<div class="row oil"><label for="rf">Recovery factor</label><input type="number" id="rf" value="25" step="any"><span class="u">% STOIIP</span></div>
+<div class="row oil"><label for="qmax">Max rate per well</label><input type="number" id="qmax" value="2000" step="any"><span class="u">STB/d</span></div>
+<div class="row gas"><label for="qgmax">Max rate per well</label><input type="number" id="qgmax" value="30" step="any"><span class="u">MMscf/d</span></div>
+<div class="row oil"><label for="price">Oil price</label><input type="number" id="price" value="70" step="any"><span class="u">$/bbl</span></div>
+<div class="row gas"><label for="priceg">Gas price</label><input type="number" id="priceg" value="3" step="any"><span class="u">$/Mscf</span></div>
+<div class="row"><label for="roy">Royalty and taxes</label><input type="number" id="roy" value="30" step="any"><span class="u">%</span></div>
+<div class="row oil"><label for="opv">Variable opex</label><input type="number" id="opv" value="12" step="any"><span class="u">$/bbl</span></div>
+<div class="row gas"><label for="opvg">Variable opex</label><input type="number" id="opvg" value="0.5" step="any"><span class="u">$/Mscf</span></div>
+<div class="row"><label for="opf">Fixed opex per well</label><input type="number" id="opf" value="0.3" step="any"><span class="u">$M/yr</span></div>
+<div class="row"><label for="wc">Well cost (D&amp;C)</label><input type="number" id="wc" value="8" step="any"><span class="u">$M</span></div>
+<div class="row"><label for="fac">Facilities</label><input type="number" id="fac" value="20" step="any"><span class="u">$M</span></div>
+<div class="row"><label for="rig">Drilling rate</label><input type="number" id="rig" value="6" step="any"><span class="u">wells/yr</span></div>
+<div class="row"><label for="disc">Discount rate</label><input type="number" id="disc" value="10" step="any"><span class="u">%</span></div>
+<div class="row"><label for="life">Field life</label><input type="number" id="life" value="25" step="1"><span class="u">years</span></div>
+<div class="row"><label for="nmax">Max wells to test</label><input type="number" id="nmax" value="30" step="1"><span class="u">wells</span></div>
+</aside>
+
+<main>
+<div class="tabs" id="tabs">
+<button data-tab="field" class="on">Pressure field</button>
+<button data-tab="well">Well drawdown</button>
+<button data-tab="spacing">Spacing and economics</button>
+<button data-tab="method">Method and assumptions</button>
+</div>
+<div id="err" class="msg hide"></div>
+
+<section id="tab-field">
+<div class="cards" id="cardsField"></div>
+<div class="tslider"><span>Time</span><input type="range" id="tslide" min="-1" max="4" step="0.01" value="2.255"><span id="tlabel" style="min-width:110px;font-weight:600"></span></div>
+<div class="mapbox" id="mapbox"><canvas id="map"></canvas><div id="tip"></div></div>
+<div class="legend"><span>Pressure, psia</span><span id="legLo"></span><canvas id="legend" width="240" height="12"></canvas><span id="legHi"></span><span id="legInt"></span></div>
+<p class="cap" id="mapCap"></p>
+<h2>Pressure profile through the first row of wells</h2>
+<svg class="chart" id="chProfile"></svg>
+<h2>Wells at the selected time</h2>
+<div class="tblwrap"><table id="tblWells"></table></div>
+</section>
+
+<section id="tab-well" class="hide">
+<div class="cards" id="cardsWell"></div>
+<h2>Flowing bottomhole pressure against time</h2>
+<p class="cap">Every well produces at the set constant rate. The gap between the isolated-well line and the field lines is the interference from neighbouring wells and, with closed boundaries, depletion. Where the field lines cross the minimum flowing pressure, the set rate can no longer be held.</p>
+<svg class="chart" id="chPwf"></svg>
+<h2>Drawdown around a single well (infinite-acting)</h2>
+<p class="cap">Line-source solution for one well on its own. The pressure disturbance spreads outward with time; the radius of investigation marks roughly where it becomes noticeable.</p>
+<svg class="chart" id="chRadial"></svg>
+</section>
+
+<section id="tab-spacing" class="hide">
+<div class="cards" id="cardsSp"></div>
+<h2>NPV against number of wells</h2>
+<p class="cap oil">In a homogeneous, fully connected reservoir every well pattern eventually recovers the same oil. More wells bring it forward in time. The optimum is where the value of producing sooner no longer pays for another well.</p>
+<p class="cap gas">Gas recovery comes from the p/z material balance: each well depletes its share of the gas until the average pressure can no longer push gas into the well at the minimum flowing pressure, or the well reaches its economic limit. More wells mainly bring production forward; they also recover a little more within the field life.</p>
+<svg class="chart" id="chNpv"></svg>
+<h2>Field production profiles</h2>
+<svg class="chart" id="chProf"></svg>
+<div style="display:flex;justify-content:space-between;align-items:end;margin-top:18px"><h2 style="margin:0">Spacing cases</h2><button class="btn" id="csv">Copy table for Excel</button></div>
+<div class="tblwrap" style="margin-top:8px"><table id="tblSp"></table></div>
+</section>
+
+<section id="tab-method" class="hide method">
+<h2>What the tool does</h2>
+<p>The tool models how producing wells pull down the pressure around them in a uniform reservoir, how the pressure disturbances from neighbouring wells overlap, and what that means for how many wells a field needs.</p>
+<h2>Pressure field: line source with superposition</h2>
+<p>Each well is treated as a line source in an infinite, homogeneous, isotropic reservoir of uniform thickness, producing a slightly compressible single-phase fluid at constant rate (field units):</p>
+<div class="eq">Δp(r,t) = 70.6 · q·B·μ / (k·h) · E1( 948 · φ·μ·ct·r² / (k·t) )      [psi; q STB/d, t hours, r ft]</div>
+<p>Pressures from several wells add together (superposition). At the wellbore, the skin pressure drop <code>141.2·q·B·μ·s/(k·h)</code> is added.</p>
+<p>With closed boundaries, the field is a no-flow rectangle. The tool uses the rectangle's Green's function, which is the product of two one-dimensional solutions (Newman's product method). It uses image wells at early time and a cosine series at late time, and integrates numerically over time. At late time this reproduces pseudo-steady-state depletion: average pressure falls by <code>q·B·t / (Vp·ct)</code>.</p>
+<h2>Gas: real-gas pseudo-pressure</h2>
+<p>For gas the same solution is written in terms of the real-gas pseudo-pressure, m(p) = ∫ 2p/(μz) dp, which makes the flow equation close to linear:</p>
+<div class="eq">m(pi) − m(p) = 711 · q·T / (k·h) · E1( 948 · φ·μgi·cti·r² / (k·t) )      [psi²/cP; q Mscf/d, T °R]
+Wellbore: add 1422·q·T·(s + D·q)/(k·h)        (D = non-Darcy coefficient, d/Mscf)</div>
+<p>Gas properties come from gas gravity and temperature:</p>
+<ul>
+<li>pseudo-critical properties from the Sutton correlation;</li>
+<li>z from Hall–Yarborough;</li>
+<li>viscosity from Lee–Gonzalez–Eakin;</li>
+<li>cg from the slope of z.</li>
+</ul>
+<p>Total compressibility = Sg·cg + Sw·cw (3×10⁻⁶) + rock compressibility. Diffusivity uses gas properties at initial pressure, which is the usual approximation; it becomes less accurate late in depletion, when gas viscosity and compressibility have changed a lot.</p>
+<p>Economics for gas: GIIP = A·h·φ·(1−Sw)/Bgi, with Bgi = 0.02827·z·T/p (ft³/scf). Each well's average pressure follows the p/z material-balance line, p/z = (pi/zi)·(1 − Gp/G), for its share G of the gas in place. Rate comes from the PSS deliverability in pseudo-pressure, including non-Darcy flow, capped at the maximum well rate. Technical recovery is the gas produced by the time average pressure falls to the minimum flowing pressure.</p>
+<p>The model assumes dry gas, with no condensate, water production, liquid loading or compression stages.</p>
+<h2>Key times and distances</h2>
+<div class="eq">Radius of investigation   r_inv = √( k·t / (948·φ·μ·ct) )            [ft, t hours]
+Onset of interference     when r_inv reaches half the well spacing
+Pseudo-steady state       t_DA = 0.0002637·k·t / (φ·μ·ct·A) ≈ 0.1 for a centred well in a square</div>
+<h2>Spacing and economics</h2>
+<p>For each well count n, the field area is split into n equal drainage areas. The productivity index uses the Dietz pseudo-steady-state form, with shape factor C_A = 30.88 for a well at the centre of a square:</p>
+<div class="eq">J = k·h / ( 141.2·B·μ·[ ½·ln( 4A / (1.781·C_A·rw²) ) + s ] )      [STB/d/psi]</div>
+<p>Recoverable oil is STOIIP × recovery factor, shared equally between wells. STOIIP = 7758·A·h·φ·(1−Sw)/Bo, with A in acres. Each well produces at the lower of J·(pi − pmin) and the maximum well rate. Rate then declines exponentially as average pressure falls, which assumes average pressure falls in proportion to cumulative production (a "tank" model). Wells come on stream at the set drilling rate. A well stops when its net revenue no longer covers its fixed opex, or at the end of field life. NPV is discounted monthly at mid-period and includes facilities, well costs, royalty and taxes, and opex.</p>
+<h2>Limitations</h2>
+<ul>
+<li>Single phase: oil above the bubble point with constant properties, or dry gas. There is no gas cap, aquifer, water injection or relative permeability.</li>
+<li>Homogeneous and isotropic, with a full-thickness vertical completion and no layering, faults or kv/kh effects.</li>
+<li>For oil, the recovery factor is an input and does not change with spacing. In real reservoirs, denser spacing often raises recovery through better contact with heterogeneous or compartmentalised rock. The tool shows acceleration value only, so it tends to favour fewer wells.</li>
+<li>Wells are on a regular pattern with equal rates and equal drainage areas.</li>
+<li>Use it for screening and first-pass spacing. Check development decisions with reservoir simulation.</li>
+</ul>
+</section>
+</main>
+</div>
+<footer>Tetra Energies · Private and confidential · Screening tool, not a substitute for reservoir simulation</footer>
+
+<script>
+/*CORE-START*/
+const GAMMA=0.5772156649015329;
+function E1(x){
+  if(!(x>0)) return Infinity;
+  if(x>60) return 0;
+  if(x<=1){let s=0,t=1;for(let k=1;k<40;k++){t*=-x/k;const d=t/k;s+=d;if(Math.abs(d)<1e-17)break;}return -GAMMA-Math.log(x)-s;}
+  let b=x+1,c=1e300,d=1/b,h=d;
+  for(let i=1;i<300;i++){const an=-i*i;b+=2;d=1/(an*d+b);c=b+an/c;const del=c*d;h*=del;if(Math.abs(del-1)<1e-15)break;}
+  return h*Math.exp(-x);
+}
+// 1-D instantaneous source Green's function on [0,L] with no-flow ends (or infinite line)
+function G1(x,x0,L,et,closed){
+  const s4=4*et;
+  if(!closed){const d=x-x0;return Math.exp(-d*d/s4)/Math.sqrt(Math.PI*s4);}
+  if(s4<L*L){let s=0;for(let m=-2;m<=2;m++){const d1=x-x0-2*m*L,d2=x+x0-2*m*L;s+=Math.exp(-d1*d1/s4)+Math.exp(-d2*d2/s4);}return s/Math.sqrt(Math.PI*s4);}
+  let s=1;const a=Math.PI*Math.PI*et/(L*L);
+  for(let n=1;n<80;n++){const e=Math.exp(-n*n*a);if(e<1e-14)break;s+=2*Math.cos(n*Math.PI*x/L)*Math.cos(n*Math.PI*x0/L)*e;}
+  return s/L;
+}
+const NQ=64;
+function eta(P){return P.k/(3792*P.phi*P.mu*P.ct);} // ft2/hr
+function tminOf(P,et){const L=Math.min(P.Lx,P.Ly);return Math.pow(0.005*L,2)/(4*et);}
+function interp(xs,ys,v){const n=xs.length;if(v<=xs[0])return ys[0];if(v>=xs[n-1])return ys[n-1];let lo=0,hi=n-1;while(hi-lo>1){const m=(lo+hi)>>1;if(xs[m]<=v)lo=m;else hi=m;}const f=(v-xs[lo])/(xs[hi]-xs[lo]);return ys[lo]+f*(ys[hi]-ys[lo]);}
+// Dry gas properties: Sutton pseudo-criticals, Hall-Yarborough z, Lee-Gonzalez-Eakin viscosity, real-gas pseudo-pressure m(p)
+function gasProps(gg,Tf,pmax){
+  const T=Tf+459.67,Tpc=169.2+349.5*gg-74*gg*gg,Ppc=756.8-131*gg-3.6*gg*gg,t=Tpc/T,M=28.97*gg;
+  const A=0.06125*t*Math.exp(-1.2*(1-t)**2),B=t*(14.76-9.76*t+4.58*t*t),C=t*(90.7-242.2*t+42.4*t*t),D=2.18+2.82*t;
+  const zf=p=>{if(p<=0)return 1;const Pr=p/Ppc;let y=Math.min(A*Pr,0.5);
+    for(let i=0;i<80;i++){const f=-A*Pr+(y+y*y+y**3-y**4)/(1-y)**3-B*y*y+C*y**D;const df=(1+4*y+4*y*y-4*y**3+y**4)/(1-y)**4-2*B*y+C*D*y**(D-1);let yn=y-f/df;if(!(yn>0))yn=y/2;if(yn>=1)yn=(y+1)/2;if(Math.abs(yn-y)<1e-13){y=yn;break;}y=yn;}
+    return A*Pr/y;};
+  const K=(9.4+0.02*M)*T**1.5/(209+19*M+T),X=3.5+986/T+0.01*M,Y=2.4-0.2*X;
+  const muf=(p,z)=>1e-4*K*Math.exp(X*Math.pow(0.0014935*p*M/(z*T),Y));
+  const N=600,ps=new Float64Array(N+1),zs=new Float64Array(N+1),mus=new Float64Array(N+1),ms=new Float64Array(N+1),pz=new Float64Array(N+1);
+  for(let i=0;i<=N;i++){const p=pmax*i/N,z=zf(p);ps[i]=p;zs[i]=z;mus[i]=muf(p,z);pz[i]=p/z;}
+  for(let i=1;i<=N;i++)ms[i]=ms[i-1]+(ps[i]-ps[i-1])*(ps[i]/(mus[i]*zs[i])+ps[i-1]/(mus[i-1]*zs[i-1]));
+  return {T,Tpc,Ppc,zf,muf,mOf:p=>interp(ps,ms,p),pOfM:m=>m<=0?0:interp(ms,ps,m),pOfPz:v=>v<=0?0:interp(pz,ps,v)};
+}
+// fluid model: maps dimensionless superposition sum F to pressure (oil: linear; gas: via pseudo-pressure)
+function fluid(P){
+  if(P._fl)return P._fl;let f;
+  if(!P.gasMode){const C=887.2*P.q*P.bo*P.mu/(P.k*P.h),sk=141.2*P.q*P.bo*P.mu*P.s/(P.k*P.h);f={pFromF:F=>P.pi-C*F,pw:F=>P.pi-C*F-sk};}
+  else{const G=P.gas,C=8935*P.q*G.T/(P.k*P.h),skm=1422*P.q*G.T*(P.s+P.dnd*P.q)/(P.k*P.h);f={pFromF:F=>G.pOfM(G.mi-C*F),pw:F=>G.pOfM(G.mi-C*F-skm)};}
+  P._fl=f;return f;
+}
+function gasSetup(P){
+  const G=gasProps(P.gg,P.tf,P.pi*1.05);G.zi=G.zf(P.pi);G.mui=G.muf(P.pi,G.zi);const dp=P.pi*1e-3;
+  G.cgi=1/P.pi-(G.zf(P.pi+dp)-G.zf(P.pi-dp))/(2*dp)/G.zi;G.mi=G.mOf(P.pi);G.Bgi=0.02827*G.zi*G.T/P.pi;
+  P.gas=G;P.mu=G.mui;P.ct=(1-P.sw)*G.cgi+P.sw*3e-6+P.cf;P.q=P.qg*1000;P.bo=1;return P;
+}
+// Dimensionless F at a point from all wells at time tH (hours)
+function Fpoint(x,y,wells,P,tH){
+  const et=eta(P),tmin=tminOf(P,et);
+  const tau0=P.closed?Math.min(tmin,tH):tH;
+  let F=0;const rw2=P.rw*P.rw;
+  for(const w of wells){const r2=Math.max((x-w.x)**2+(y-w.y)**2,rw2);F+=E1(r2/(4*et*tau0))/(4*Math.PI);}
+  if(P.closed&&tH>tmin){
+    const dl=Math.log(tH/tmin)/NQ;
+    for(let k=0;k<NQ;k++){
+      const tau=Math.exp(Math.log(tmin)+(k+0.5)*dl),e=et*tau,wgt=e*dl;
+      for(const w of wells)F+=wgt*G1(x,w.x,P.Lx,e,true)*G1(y,w.y,P.Ly,e,true);
+    }
+  }
+  return F;
+}
+// pressure grid: returns Float64Array of pressure (psia), row-major iy*nx+ix, y up
+function gridPressure(P,wells,tH,nx,ny){
+  const et=eta(P),tmin=tminOf(P,et),F=new Float64Array(nx*ny);
+  const xs=new Float64Array(nx),ys=new Float64Array(ny);
+  for(let i=0;i<nx;i++)xs[i]=(i+0.5)*P.Lx/nx;
+  for(let j=0;j<ny;j++)ys[j]=(j+0.5)*P.Ly/ny;
+  const tau0=P.closed?Math.min(tmin,tH):tH,rw2=P.rw*P.rw,c4=1/(4*et*tau0),i4p=1/(4*Math.PI);
+  for(const w of wells){
+    for(let j=0;j<ny;j++){const dy2=(ys[j]-w.y)**2;for(let i=0;i<nx;i++){const r2=Math.max((xs[i]-w.x)**2+dy2,rw2);F[j*nx+i]+=E1(r2*c4)*i4p;}}
+  }
+  if(P.closed&&tH>tmin){
+    const dl=Math.log(tH/tmin)/NQ,gx=new Float64Array(nx),gy=new Float64Array(ny);
+    for(let k=0;k<NQ;k++){
+      const tau=Math.exp(Math.log(tmin)+(k+0.5)*dl),e=et*tau,wgt=e*dl;
+      for(const w of wells){
+        for(let i=0;i<nx;i++)gx[i]=G1(xs[i],w.x,P.Lx,e,true);
+        for(let j=0;j<ny;j++){const wy=wgt*G1(ys[j],w.y,P.Ly,e,true),o=j*nx;for(let i=0;i<nx;i++)F[o+i]+=wy*gx[i];}
+      }
+    }
+  }
+  const fl=fluid(P);for(let i=0;i<F.length;i++)F[i]=fl.pFromF(F[i]);
+  return {p:F,xs,ys};
+}
+function wellPwf(P,wells,tH){
+  const et=eta(P),tmin=tminOf(P,et),n=wells.length;
+  const tau0=P.closed?Math.min(tmin,tH):tH,rw2=P.rw*P.rw,F=new Float64Array(n);
+  for(let a=0;a<n;a++){const xa=wells[a].x+P.rw,ya=wells[a].y;for(const w of wells){const r2=Math.max((xa-w.x)**2+(ya-w.y)**2,rw2);F[a]+=E1(r2/(4*et*tau0))/(4*Math.PI);}}
+  if(P.closed&&tH>tmin){
+    // unique coordinates so the 1-D Green's functions are computed once per time step
+    const key=v=>v.toFixed(3),ux=[...new Set(wells.map(w=>key(w.x)))].map(Number),uy=[...new Set(wells.map(w=>key(w.y)))].map(Number);
+    const ix=wells.map(w=>ux.indexOf(+key(w.x))),iy=wells.map(w=>uy.indexOf(+key(w.y)));
+    const nx=ux.length,ny=uy.length,GX=new Float64Array(nx*nx),GY=new Float64Array(ny*ny);
+    const dl=Math.log(tH/tmin)/NQ;
+    for(let k=0;k<NQ;k++){
+      const tau=Math.exp(Math.log(tmin)+(k+0.5)*dl),e=et*tau,wgt=e*dl;
+      for(let a=0;a<nx;a++)for(let b=0;b<nx;b++)GX[a*nx+b]=G1(ux[a]+P.rw,ux[b],P.Lx,e,true);
+      for(let a=0;a<ny;a++)for(let b=0;b<ny;b++)GY[a*ny+b]=G1(uy[a],uy[b],P.Ly,e,true);
+      for(let a=0;a<n;a++){let s=0;const ra=ix[a]*nx,rb=iy[a]*ny;for(let j=0;j<n;j++)s+=GX[ra+ix[j]]*GY[rb+iy[j]];F[a]+=wgt*s;}
+    }
+  }
+  const fl=fluid(P);return Array.from(F,f=>fl.pw(f));
+}
+function pattern(n,Lx,Ly){
+  let best=null;
+  for(let c=1;c<=n;c++){const r=Math.ceil(n/c);const dx=Lx/c,dy=Ly/r;const score=Math.abs(Math.log(dx/dy))+(r*c-n)*0.35;if(!best||score<best.score)best={c,r,dx,dy,score};}
+  const wells=[];let k=0;
+  for(let j=0;j<best.r;j++){const m=Math.min(best.c,n-k);const dxr=Lx/m;for(let i=0;i<m;i++){wells.push({x:(i+0.5)*dxr,y:(j+0.5)*best.dy,id:++k});}}
+  return {wells,cols:best.c,rows:best.r,dx:best.dx,dy:best.dy};
+}
+function stoiip(P){return P.Lx*P.Ly/43560*7758*P.h*P.phi*(1-P.sw)/P.bo;}
+function giip(P){return P.Lx*P.Ly*P.h*P.phi*(1-P.sw)/P.gas.Bgi;} // scf
+function econ(n,P){
+  const A=P.Lx*P.Ly,Aw=A/n;
+  const lt=0.5*Math.log(4*Aw/(1.781*30.88*P.rw*P.rw))+P.s;
+  const net=P.gasMode?P.priceg*(1-P.roy)-P.opvg:P.price*(1-P.roy)-P.opv;
+  const fixDay=P.opf*1e6/365.25,qel=net>0?fixDay/net:Infinity;
+  let J,qi,q0,Np,tend,inPlace,techRec;
+  if(!P.gasMode){
+    J=lt>0?P.k*P.h/(141.2*P.bo*P.mu*lt):NaN;
+    inPlace=stoiip(P);techRec=inPlace*P.rf;const Nrw=techRec/n;
+    qi=J*(P.pi-P.pmin);q0=Math.min(qi,P.qmax);const D=qi/Nrw,tp=Nrw*(1-q0/qi)/q0;
+    tend=q0>qel?tp+Math.log(q0/qel)/D:0;
+    Np=t=>{t=Math.min(Math.max(t,0),tend);return t<=tp?q0*t:q0*tp+q0/D*(1-Math.exp(-D*(t-tp)));};
+  }else{
+    // p/z tank per well, pseudo-pressure PSS deliverability with optional non-Darcy term (Mscf, Mscf/d)
+    const G=P.gas;inPlace=giip(P)/1000;const Gw=inPlace/n,pzi=P.pi/G.zi,mmin=G.mOf(P.pmin);
+    const b=lt>0?1422*G.T*lt/(P.k*P.h):NaN,a=1422*G.T*P.dnd/(P.k*P.h);J=1/b;
+    const qmax=P.qgmax*1000;
+    const pot=pb=>{const dm=G.mOf(pb)-mmin;if(!(dm>0))return 0;return a>0?(-b+Math.sqrt(b*b+4*a*dm))/(2*a):dm/b;};
+    const rate=Gp=>Math.min(pot(G.pOfPz(pzi*(1-Gp/Gw))),qmax);
+    qi=pot(P.pi);q0=Math.min(qi,qmax);
+    techRec=inPlace*(1-(P.pmin/G.zf(P.pmin))/pzi);
+    const dt=7,tmax=P.life*365.25,T=[0],C=[0];let Gp=0,t=0;
+    while(t<tmax){const q1=rate(Gp);if(!(q1>qel)||q1<=0)break;const q2=rate(Gp+q1*dt/2);Gp+=q2*dt;t+=dt;T.push(t);C.push(Gp);}
+    tend=t;
+    Np=x=>{x=Math.min(Math.max(x,0),tend);if(T.length<2)return 0;const i=Math.min(Math.floor(x/dt),T.length-2);return C[i]+(C[i+1]-C[i])*(x-T[i])/dt;};
+  }
+  const months=Math.round(P.life*12),dpm=365.25/12;
+  let npv=-P.fac*1e6,cum=0,peak=0,t80=null,capex=P.fac;const prof=[];
+  for(let i=0;i<n;i++){const ti=i/P.rig;if(ti<P.life){npv-=P.wc*1e6*Math.pow(1+P.disc,-ti);capex+=P.wc;}}
+  for(let m=0;m<months;m++){
+    const a=m/12,b=(m+1)/12,tm=(m+0.5)/12;let vol=0,days=0;
+    for(let i=0;i<n;i++){const ti=i/P.rig;if(b<=ti)continue;const t1=Math.max(0,a-ti)*365.25,t2=(b-ti)*365.25;vol+=Np(t2)-Np(t1);days+=Math.max(0,Math.min(t2,tend)-Math.min(t1,tend));}
+    npv+=(vol*net-fixDay*days)*Math.pow(1+P.disc,-tm);
+    cum+=vol;const rate=vol/dpm;if(rate>peak)peak=rate;prof.push([b,rate]);
+    if(t80===null&&cum>=0.8*techRec)t80=b;
+  }
+  return {n,J,qi,q0,Aw,spacing:Math.sqrt(Aw),npv:npv/1e6,peak,cum,t80,prof,tend,inPlace,techRec,capex,net};
+}
+/*CORE-END*/
+
+// ---------- UI ----------
+const $=id=>document.getElementById(id);
+const M_PER_FT=0.3048;
+let lenUnit='ft',fluidMode='oil';
+function fmt(v,d=0){if(v===null||v===undefined||!isFinite(v))return '–';return v.toLocaleString('en-GB',{minimumFractionDigits:d,maximumFractionDigits:d});}
+function sig(v,s=3){if(!isFinite(v))return '–';if(v===0)return '0';const d=Math.max(0,s-1-Math.floor(Math.log10(Math.abs(v))));return fmt(v,Math.min(d,6));}
+function num(id){return parseFloat($(id).value);}
+function lenIn(id){const v=num(id);return lenUnit==='ft'?v:v/M_PER_FT;}
+function L(ft,s=3){return lenUnit==='ft'?sig(ft,s)+' ft':sig(ft*M_PER_FT,s)+' m';}
+function Lalt(ft,s=3){return lenUnit==='ft'?sig(ft*M_PER_FT,s)+' m':sig(ft,s)+' ft';}
+function dur(days){if(!isFinite(days))return '–';if(days<1)return sig(days*24,2)+' hours';if(days<90)return sig(days,2)+' days';if(days<730)return sig(days/30.44,2)+' months';return sig(days/365.25,2)+' years';}
+function readP(){
+  return {k:num('k'),h:lenIn('h'),phi:num('phi'),sw:num('sw'),mu:num('mu'),bo:num('bo'),ct:num('ct'),pi:num('pi'),pmin:num('pmin'),rw:lenIn('rw'),s:num('skin'),
+  Lx:lenIn('lx'),Ly:lenIn('ly'),closed:$('closed').checked,nw:Math.min(60,Math.max(1,Math.round(num('nw')))),q:num('q'),tDays:num('t'),
+  rf:num('rf')/100,qmax:num('qmax'),price:num('price'),roy:num('roy')/100,opv:num('opv'),opf:num('opf'),wc:num('wc'),fac:num('fac'),rig:num('rig'),disc:num('disc')/100,life:num('life'),nmax:Math.min(80,Math.max(1,Math.round(num('nmax')))),
+  gasMode:fluidMode==='gas',gg:num('gg'),tf:num('tf'),cf:num('cf'),dnd:num('dnd')||0,qg:num('qg'),qgmax:num('qgmax'),priceg:num('priceg'),opvg:num('opvg')};
+}
+function validate(P){
+  const pos=P.gasMode?['k','h','phi','gg','tf','pi','rw','Lx','Ly','qg','qgmax','tDays','rig','life']:['k','h','phi','mu','bo','ct','pi','rw','Lx','Ly','q','tDays','rig','life'];
+  if(P.gasMode&&!(P.cf>=0&&P.dnd>=0))return 'Check the inputs: rock compressibility and non-Darcy coefficient cannot be negative.';
+  for(const k of pos)if(!(P[k]>0))return 'Check the inputs: '+k+' must be a positive number.';
+  if(P.phi>=1||P.sw<0||P.sw>=1)return 'Porosity and water saturation must be fractions between 0 and 1.';
+  if(!(P.pmin<P.pi))return 'Minimum flowing pressure must be below initial pressure.';
+  return null;
+}
+function rateStr(q,P){return P.gasMode?sig(q/1000,3)+' MMscf/d':fmt(q)+' STB/d';}
+function usd(v){return (v<0?'−$':'$')+sig(Math.abs(v))+'M';}
+function card(k,v,s,cls){return `<div class="card ${cls||''}"><div class="k">${k}</div><div class="v">${v}</div><div class="s">${s||''}</div></div>`;}
+
+// colour ramp: Mist -> light blue -> Blue -> Navy
+const RAMP=[[0,[238,241,245]],[0.35,[157,184,227]],[0.7,[31,91,181]],[1,[14,27,44]]];
+function ramp(s){s=Math.min(1,Math.max(0,s));for(let i=1;i<RAMP.length;i++){if(s<=RAMP[i][0]){const a=RAMP[i-1],b=RAMP[i],f=(s-a[0])/(b[0]-a[0]);return a[1].map((v,j)=>Math.round(v+(b[1][j]-v)*f));}}return RAMP[RAMP.length-1][1];}
+function niceTicks(min,max,n=5){const span=(max-min)||Math.abs(max)||1;const st0=span/n;const mag=Math.pow(10,Math.floor(Math.log10(st0)));const e=st0/mag;const st=(e>=7.5?10:e>=3.5?5:e>=1.5?2:1)*mag;const t=[];for(let v=Math.ceil(min/st)*st;v<=max+1e-9*st;v+=st)t.push(+v.toPrecision(12));return {t,st};}
+
+// ---------- generic SVG line chart ----------
+function chart(svg,o){
+  const W=svg.clientWidth||svg.parentNode.clientWidth||760,H=o.h||300,m={l:66,r:18,t:30,b:44};
+  svg.setAttribute('viewBox',`0 0 ${W} ${H}`);svg.setAttribute('height',H);
+  const all=[];o.series.forEach(s=>s.pts.forEach(p=>{if(isFinite(p[0])&&isFinite(p[1])&&(!o.xlog||p[0]>0))all.push(p);}));
+  (o.hlines||[]).forEach(h=>all.push([NaN,h.y]));
+  if(!all.length){svg.innerHTML='';return;}
+  const tx=v=>o.xlog?Math.log10(v):v;
+  let x0=o.xmin!==undefined?tx(o.xmin):Math.min(...all.filter(p=>isFinite(p[0])).map(p=>tx(p[0]))),x1=o.xmax!==undefined?tx(o.xmax):Math.max(...all.filter(p=>isFinite(p[0])).map(p=>tx(p[0])));
+  let y0=o.ymin!==undefined?o.ymin:Math.min(...all.map(p=>p[1])),y1=o.ymax!==undefined?o.ymax:Math.max(...all.map(p=>p[1]));
+  if(o.xlog){x0=Math.floor(x0);x1=Math.ceil(x1);}
+  if(y1===y0){y1+=1;y0-=1;}
+  const yt=niceTicks(y0,y1,5);if(o.ymin===undefined)y0=Math.min(y0,yt.t[0]);if(o.ymax===undefined)y1=Math.max(y1,yt.t[yt.t.length-1]);
+  const yt2=niceTicks(y0,y1,5);
+  const sx=v=>m.l+(tx(v)-x0)/(x1-x0)*(W-m.l-m.r),sy=v=>H-m.b-(v-y0)/(y1-y0)*(H-m.t-m.b);
+  let g='';
+  yt2.t.forEach(v=>{if(v<y0-1e-9||v>y1+1e-9)return;const y=sy(v);g+=`<line x1="${m.l}" x2="${W-m.r}" y1="${y}" y2="${y}" stroke="#E3E7EC"/><text x="${m.l-6}" y="${y+4}" text-anchor="end" font-size="11" fill="#4C535C">${fmt(v,Math.max(0,-Math.floor(Math.log10(yt2.st))))}</text>`;});
+  if(o.xlog){for(let k=x0;k<=x1;k++){const x=sx(Math.pow(10,k));g+=`<line x1="${x}" x2="${x}" y1="${m.t}" y2="${H-m.b}" stroke="#E3E7EC"/><text x="${x}" y="${H-m.b+16}" text-anchor="middle" font-size="11" fill="#4C535C">${sig(Math.pow(10,k),1)}</text>`;for(let j=2;j<10&&k<x1;j++){const xm=sx(j*Math.pow(10,k));g+=`<line x1="${xm}" x2="${xm}" y1="${m.t}" y2="${H-m.b}" stroke="#F1F3F6"/>`;}}}
+  else{const xt=niceTicks(x0,x1,8);xt.t.forEach(v=>{const x=sx(v);g+=`<line x1="${x}" x2="${x}" y1="${m.t}" y2="${H-m.b}" stroke="#E3E7EC"/><text x="${x}" y="${H-m.b+16}" text-anchor="middle" font-size="11" fill="#4C535C">${fmt(v,Math.max(0,-Math.floor(Math.log10(xt.st))))}</text>`;});}
+  g+=`<line x1="${m.l}" x2="${W-m.r}" y1="${H-m.b}" y2="${H-m.b}" stroke="#4C535C"/>`;
+  g+=`<text x="${(m.l+W-m.r)/2}" y="${H-6}" text-anchor="middle" font-size="12" fill="#4C535C">${o.xlabel||''}</text>`;
+  g+=`<text transform="translate(14,${(m.t+H-m.b)/2}) rotate(-90)" text-anchor="middle" font-size="12" fill="#4C535C">${o.ylabel||''}</text>`;
+  const clip=`<clipPath id="c${svg.id}"><rect x="${m.l}" y="${m.t-2}" width="${W-m.l-m.r}" height="${H-m.t-m.b+4}"/></clipPath>`;
+  let lines='';
+  (o.hlines||[]).forEach(h=>{const y=sy(h.y);lines+=`<line x1="${m.l}" x2="${W-m.r}" y1="${y}" y2="${y}" stroke="${h.color||'#D7263A'}" stroke-dasharray="5 4" stroke-width="1.2"/><text x="${W-m.r-4}" y="${h.below?y+14:y-5}" text-anchor="end" font-size="11" fill="${h.color||'#D7263A'}">${h.label||''}</text>`;});
+  (o.vlines||[]).forEach((v,vi)=>{if(o.xlog&&!(v.x>0))return;const x=sx(v.x);if(x<m.l||x>W-m.r)return;lines+=`<line x1="${x}" x2="${x}" y1="${m.t}" y2="${H-m.b}" stroke="${v.color||'#4C535C'}" stroke-dasharray="3 3"/><text x="${x>W-m.r-110?x-4:x+4}" y="${m.t+12+vi*14}" text-anchor="${x>W-m.r-110?'end':'start'}" font-size="11" fill="${v.color||'#4C535C'}">${v.label||''}</text>`;});
+  o.series.forEach(s=>{const pts=s.pts.filter(p=>isFinite(p[0])&&isFinite(p[1])&&(!o.xlog||p[0]>0));if(!pts.length)return;const d=pts.map((p,i)=>(i?'L':'M')+sx(p[0]).toFixed(1)+','+sy(p[1]).toFixed(1)).join('');lines+=`<path d="${d}" fill="none" stroke="${s.color}" stroke-width="${s.w||2}" ${s.dash?`stroke-dasharray="${s.dash}"`:''} stroke-linejoin="round"/>`;if(s.dots)pts.forEach(p=>{lines+=`<circle cx="${sx(p[0])}" cy="${sy(p[1])}" r="2.6" fill="${s.color}"/>`;});});
+  (o.marks||[]).forEach(k=>{lines+=`<circle cx="${sx(k.x)}" cy="${sy(k.y)}" r="5.5" fill="#fff" stroke="${k.color}" stroke-width="2.4"/><text x="${sx(k.x)+8}" y="${sy(k.y)-8}" font-size="11.5" font-weight="600" fill="${k.color}">${k.label}</text>`;});
+  let lg='',lx=m.l;o.series.forEach(s=>{lg+=`<line x1="${lx}" x2="${lx+18}" y1="14" y2="14" stroke="${s.color}" stroke-width="2.4" ${s.dash?`stroke-dasharray="${s.dash}"`:''}/><text x="${lx+23}" y="18" font-size="12" fill="#0E1B2C">${s.name}</text>`;lx+=36+s.name.length*6.6;});
+  svg.innerHTML=`<defs>${clip}</defs>${g}<g clip-path="url(#c${svg.id})">${lines}</g>${lg}`;
+}
+
+// ---------- map ----------
+let lastMap=null;
+function drawMap(P,pat,tH){
+  const box=$('mapbox'),cv=$('map');
+  const avail=Math.min(($('tab-field').clientWidth||800)-4,900);
+  const asp=P.Ly/P.Lx;let W=avail,H=W*asp;if(H>520){H=520;W=H/asp;}
+  const dpr=window.devicePixelRatio||1;cv.width=Math.round(W*dpr);cv.height=Math.round(H*dpr);cv.style.width=W+'px';cv.style.height=H+'px';
+  const base=150;const nx=P.Lx>=P.Ly?base:Math.max(30,Math.round(base*P.Lx/P.Ly)),ny=P.Ly>=P.Lx?base:Math.max(30,Math.round(base*P.Ly/P.Lx));
+  const G=gridPressure(P,pat.wells,tH,nx,ny);
+  let lo=Infinity,hi=-Infinity;for(const v of G.p){if(v<lo)lo=v;if(v>hi)hi=v;}
+  const top=hi,span=Math.max(top-lo,1e-6);
+  const off=document.createElement('canvas');off.width=nx;off.height=ny;const oc=off.getContext('2d'),img=oc.createImageData(nx,ny);
+  for(let j=0;j<ny;j++)for(let i=0;i<nx;i++){const c=ramp((top-G.p[j*nx+i])/span);const o=((ny-1-j)*nx+i)*4;img.data[o]=c[0];img.data[o+1]=c[1];img.data[o+2]=c[2];img.data[o+3]=255;}
+  oc.putImageData(img,0,0);
+  const ctx=cv.getContext('2d');ctx.setTransform(dpr,0,0,dpr,0,0);ctx.imageSmoothingEnabled=true;ctx.drawImage(off,0,0,W,H);
+  // contours
+  const lv=niceTicks(lo,hi,9);const X=gx=>(gx+0.5)*W/nx,Y=gy=>H-(gy+0.5)*H/ny;
+  ctx.lineWidth=0.8;
+  const segT={1:[[3,0]],2:[[0,1]],3:[[3,1]],4:[[1,2]],5:[[3,0],[1,2]],6:[[0,2]],7:[[3,2]],8:[[2,3]],9:[[0,2]],10:[[0,1],[2,3]],11:[[1,2]],12:[[1,3]],13:[[0,1]],14:[[0,3]]};
+  for(const Lv of lv.t){
+    if(Lv<=lo||Lv>=hi)continue;
+    const dark=(top-Lv)/span>0.55;ctx.strokeStyle=dark?'rgba(255,255,255,.55)':'rgba(14,27,44,.45)';ctx.beginPath();
+    for(let j=0;j<ny-1;j++)for(let i=0;i<nx-1;i++){
+      const a=G.p[j*nx+i],b=G.p[j*nx+i+1],c=G.p[(j+1)*nx+i+1],d=G.p[(j+1)*nx+i];
+      const idx=(a>Lv?1:0)|(b>Lv?2:0)|(c>Lv?4:0)|(d>Lv?8:0);if(idx===0||idx===15)continue;
+      const e=k=>{let t;switch(k){case 0:t=(Lv-a)/(b-a);return[i+t,j];case 1:t=(Lv-b)/(c-b);return[i+1,j+t];case 2:t=(Lv-c)/(d-c);return[i+1-t,j+1];default:t=(Lv-d)/(a-d);return[i,j+1-t];}};
+      for(const s of segT[idx]){const p1=e(s[0]),p2=e(s[1]);ctx.moveTo(X(p1[0]),Y(p1[1]));ctx.lineTo(X(p2[0]),Y(p2[1]));}
+    }
+    ctx.stroke();
+  }
+  // wells
+  pat.wells.forEach(w=>{const x=w.x/P.Lx*W,y=H-w.y/P.Ly*H;ctx.beginPath();ctx.arc(x,y,5,0,2*Math.PI);ctx.fillStyle='#F7B500';ctx.fill();ctx.lineWidth=1.5;ctx.strokeStyle='#0E1B2C';ctx.stroke();ctx.fillStyle='#fff';ctx.font='600 11px Inter,Arial';ctx.fillText('W'+w.id,x+7,y-6);});
+  // r_inv ring around well 1
+  const rinv=Math.sqrt(P.k*tH/(948*P.phi*P.mu*P.ct));const w1=pat.wells[0];
+  ctx.setLineDash([4,4]);ctx.strokeStyle='#D7263A';ctx.lineWidth=1.2;ctx.beginPath();ctx.ellipse(w1.x/P.Lx*W,H-w1.y/P.Ly*H,rinv/P.Lx*W,rinv/P.Ly*H,0,0,2*Math.PI);ctx.stroke();ctx.setLineDash([]);
+  // scale bar
+  const sb=niceTicks(0,(lenUnit==='ft'?P.Lx:P.Lx*M_PER_FT)/4,1).st;const sbFt=lenUnit==='ft'?sb:sb/M_PER_FT;const sbW=sbFt/P.Lx*W;
+  ctx.fillStyle='rgba(255,255,255,.85)';ctx.fillRect(8,H-30,sbW+70,22);ctx.fillStyle='#0E1B2C';ctx.fillRect(14,H-16,sbW,3);ctx.font='11px Inter,Arial';ctx.fillText(fmt(sb)+' '+lenUnit,sbW+20,H-12);
+  // legend
+  const lc=$('legend').getContext('2d');for(let i=0;i<240;i++){const c=ramp(1-i/239);lc.fillStyle=`rgb(${c})`;lc.fillRect(i,0,1,12);}
+  $('legLo').textContent=fmt(lo);$('legHi').textContent=fmt(top);$('legInt').textContent='· isobars every '+fmt(lv.st)+' psi';
+  lastMap={G,nx,ny,W,H,P};
+  return {lo,hi,rinv,G};
+}
+$('map').addEventListener('mousemove',ev=>{
+  if(!lastMap)return;const r=ev.target.getBoundingClientRect(),mx=ev.clientX-r.left,my=ev.clientY-r.top;
+  const {G,nx,ny,W,H,P}=lastMap;const i=Math.min(nx-1,Math.max(0,Math.floor(mx/W*nx))),j=Math.min(ny-1,Math.max(0,Math.floor((H-my)/H*ny)));
+  const tip=$('tip');tip.style.display='block';tip.style.left=(mx+12)+'px';tip.style.top=(my+12)+'px';
+  tip.textContent=`x ${L(G.xs[i])}, y ${L(G.ys[j])} · ${fmt(G.p[j*nx+i])} psia`;
+});
+$('map').addEventListener('mouseleave',()=>{$('tip').style.display='none';});
+
+// ---------- render ----------
+let spRows=[];
+function render(){
+  const P=readP();const err=validate(P);
+  $('err').classList.toggle('hide',!err);$('err').textContent=err||'';if(err)return;
+  if(P.gasMode){gasSetup(P);const G=P.gas;$('gasNote').innerHTML=`At initial pressure: z = ${fmt(G.zi,3)}, μg = ${fmt(G.mui,4)} cP, cg = ${sig(G.cgi,3)} 1/psi, total ct = ${sig(P.ct,3)} 1/psi, Bg = ${fmt(G.Bgi*1000/5.615,3)} rb/Mscf.`;}
+  const fl=fluid(P);
+  const tab=document.querySelector('.tabs button.on').dataset.tab;
+  const pat=pattern(P.nw,P.Lx,P.Ly);const tH=P.tDays*24;
+  const et=eta(P);
+  const rinv=Math.sqrt(P.k*tH/(948*P.phi*P.mu*P.ct));
+  const sMin=P.nw>1?Math.min(pat.dx,pat.dy):Math.min(P.Lx,P.Ly);
+  const tInt=948*P.phi*P.mu*P.ct*Math.pow(sMin/2,2)/P.k/24;
+  const Aw=P.Lx*P.Ly/P.nw;const tPss=0.1*P.phi*P.mu*P.ct*Aw/(0.0002637*P.k)/24;
+  $('tlabel').textContent=dur(P.tDays);
+
+  // pwf over time (used by field cards and well tab)
+  const tEnd=Math.max(P.tDays*3,1826);const times=[];for(let i=0;i<=44;i++)times.push(Math.pow(10,Math.log10(0.01)+i*(Math.log10(tEnd)-Math.log10(0.01))/44));
+  const curves=times.map(td=>{const pw=wellPwf(P,pat.wells,td*24);return [td,Math.min(...pw),Math.max(...pw)];});
+  const iso=times.map(td=>[td,fl.pw(E1(948*P.phi*P.mu*P.ct*P.rw*P.rw/(P.k*td*24))/(4*Math.PI))]);
+  let tFail=null;for(let i=1;i<curves.length;i++){if(curves[i][1]<P.pmin){const a=curves[i-1],b=curves[i];const f=(a[1]-P.pmin)/(a[1]-b[1]);tFail=Math.pow(10,Math.log10(a[0])+f*(Math.log10(b[0])-Math.log10(a[0])));if(curves[0][1]<P.pmin)tFail=0;break;}}
+  const pwNow=wellPwf(P,pat.wells,tH);const pwMin=Math.min(...pwNow),pwMax=Math.max(...pwNow);
+  const fieldRate=P.q*P.nw;
+
+  if(tab==='field'){
+    $('cardsField').innerHTML=
+      card('Radius of investigation',L(rinv),Lalt(rinv)+' at '+dur(P.tDays)+' (red ring)')+
+      card('Well pattern',`${pat.cols} × ${pat.rows}`,`spacing ${L(pat.dx)} × ${L(pat.dy)}`)+
+      card('Interference starts',P.nw>1?dur(tInt):'–','when r_inv reaches half the spacing')+
+      card(P.closed?'Boundary-dominated flow':'Drainage area per well',P.closed?dur(tPss):sig(Aw/43560)+' acres',P.closed?'pseudo-steady state, t_DA ≈ 0.1':sig(Aw/43560/247.1)+' km²')+
+      card('Lowest well pressure',fmt(pwMin)+' psia',`highest ${fmt(pwMax)} psia`,pwMin<P.pmin?'warn':'')+
+      card('Set rate held until',tFail===null?'> '+dur(tEnd):dur(tFail),`${rateStr(fieldRate,P)} field rate`,tFail!==null&&tFail<P.tDays?'warn':(tFail===null?'good':''));
+    const mp=drawMap(P,pat,tH);
+    $('mapCap').textContent=`Pressure after ${dur(P.tDays)} with ${P.nw} well${P.nw>1?'s':''} each at ${rateStr(P.q,P)}. Field ${L(P.Lx)} × ${L(P.Ly)} (${sig(P.Lx*P.Ly/43560)} acres, ${sig(P.Lx*P.Ly*M_PER_FT*M_PER_FT/1e6)} km²), ${P.closed?'closed boundaries':'infinite-acting reservoir beyond the field outline'}. Hover over the map to read the pressure.`;
+    // profile along first row
+    const row0=pat.wells.filter(w=>Math.abs(w.y-pat.wells[0].y)<1e-6);const y=row0[0].y;const pts=[];
+    const npts=240;for(let i=0;i<=npts;i++){const x=i/npts*P.Lx;pts.push([lenUnit==='ft'?x:x*M_PER_FT,fl.pFromF(Fpoint(x,y,pat.wells,P,tH))]);}
+    chart($('chProfile'),{series:[{name:'Pressure at '+dur(P.tDays),color:'#1F5BB5',pts}],hlines:[{y:P.pi,label:'initial pressure',color:'#4C535C',below:true},{y:P.pmin,label:'minimum flowing pressure'}],xlabel:'Distance along field, '+lenUnit,ylabel:'Pressure, psia',ymax:P.pi*1.02,h:260,
+      vlines:row0.map(w=>({x:lenUnit==='ft'?w.x:w.x*M_PER_FT,label:'W'+w.id,color:'#4C535C'}))});
+    let tb='<tr><th>Well</th><th>x</th><th>y</th><th>Flowing pressure, psia</th><th>Drawdown, psi</th><th>Status</th></tr>';
+    pat.wells.forEach((w,i)=>{tb+=`<tr><td>W${w.id}</td><td>${L(w.x)}</td><td>${L(w.y)}</td><td>${fmt(pwNow[i])}</td><td>${fmt(P.pi-pwNow[i])}</td><td>${pwNow[i]<P.pmin?'<span style="color:#D7263A">below minimum</span>':'ok'}</td></tr>`;});
+    $('tblWells').innerHTML=tb;
+  }
+  if(tab==='well'){
+    $('cardsWell').innerHTML=
+      card('Diffusivity, η',sig(et*(lenUnit==='ft'?1:M_PER_FT*M_PER_FT))+' '+lenUnit+'²/h','k / (φ μ ct)')+
+      card('Isolated well pressure',fmt(iso.find(p=>p[0]>=P.tDays)?.[1]??iso[iso.length-1][1])+' psia','no neighbours, infinite-acting')+
+      card(P.gasMode?'Skin and non-Darcy pressure drop':'Skin pressure drop',fmt(P.pi-fl.pw(0),1)+' psi','at initial pressure')+
+      card('Set rate held until',tFail===null?'> '+dur(tEnd):dur(tFail),'worst well reaches minimum pressure',tFail!==null&&tFail<P.tDays?'warn':(tFail===null?'good':''));
+    chart($('chPwf'),{xlog:true,series:[{name:'Isolated well',color:'#4C535C',dash:'6 4',pts:iso},{name:'Field, best well',color:'#1F5BB5',pts:curves.filter(c=>c[2]>=0).map(c=>[c[0],c[2]])},{name:'Field, worst well',color:'#0E1B2C',pts:curves.filter(c=>c[1]>=0).map(c=>[c[0],c[1]])}],
+      hlines:[{y:P.pmin,label:'minimum flowing pressure'}],vlines:[{x:P.tDays,label:'selected time',color:'#F07A10'},...(P.nw>1?[{x:tInt,label:'interference',color:'#6A3FC2'}]:[])],
+      xlabel:'Time, days',ylabel:'Flowing bottomhole pressure, psia',ymax:P.pi,ymin:0,h:320});
+    const tl=[1,30,P.tDays,365];const cols=['#9DB8E3','#5B8BD6','#F07A10','#0E1B2C'];const rmax=Math.max(P.Lx,P.Ly);
+    const series=tl.map((td,i)=>{const pts=[];for(let k=0;k<=80;k++){const r=P.rw*Math.pow(rmax/P.rw,k/80);pts.push([lenUnit==='ft'?r:r*M_PER_FT,P.pi-fl.pFromF(E1(948*P.phi*P.mu*P.ct*r*r/(P.k*td*24))/(4*Math.PI))]);}return {name:dur(td)+(i===2?' (selected)':''),color:cols[i],pts,w:i===2?2.6:1.8};});
+    chart($('chRadial'),{xlog:true,series,xlabel:'Distance from well, '+lenUnit,ylabel:'Pressure drop, psi',ymin:0,h:300,
+      vlines:[...(P.nw>1?[{x:(lenUnit==='ft'?sMin/2:sMin/2*M_PER_FT),label:'half spacing',color:'#6A3FC2'}]:[]),{x:lenUnit==='ft'?rinv:rinv*M_PER_FT,label:'r_inv (selected)',color:'#F07A10'}]});
+  }
+  if(tab==='spacing'){
+    spRows=[];for(let n=1;n<=P.nmax;n++)spRows.push(econ(n,P));
+    const ok=spRows.filter(r=>isFinite(r.npv));let best=ok.reduce((a,b)=>b.npv>a.npv?b:a,ok[0]);
+    const sel=spRows[Math.min(P.nw,P.nmax)-1];
+    const net=spRows[0].net,G=P.gasMode;
+    $('cardsSp').innerHTML=
+      (G?card('GIIP',sig(spRows[0].inPlace/1e6)+' Bcf',sig(P.Lx*P.Ly/43560)+' acres')+
+          card('Technical recovery',sig(spRows[0].techRec/1e6)+' Bcf',fmt(spRows[0].techRec/spRows[0].inPlace*100,1)+'% of GIIP to abandonment at '+fmt(P.pmin)+' psia')
+        :card('STOIIP',sig(stoiip(P)/1e6)+' MMstb',sig(P.Lx*P.Ly/43560)+' acres')+
+          card('Recoverable',sig(stoiip(P)*P.rf/1e6)+' MMstb','at '+fmt(P.rf*100,1)+'% recovery'))+
+      card('Optimum well count',best?best.n+' wells':'–',best?'≈ '+L(best.spacing)+' spacing ('+sig(best.Aw/43560)+' acres/well)':'','good')+
+      card('NPV at optimum',best?usd(best.npv):'–','discounted at '+fmt(P.disc*100,1)+'%')+
+      card('NPV with '+(sel?sel.n:'–')+' wells',sel?usd(sel.npv):'–','current well count')+
+      card('Netback',`$${fmt(net,2)}/${G?'Mscf':'bbl'}`,'after royalty, taxes and variable opex',net<=0?'warn':'');
+    chart($('chNpv'),{series:[{name:'NPV, $M',color:'#1F5BB5',pts:spRows.map(r=>[r.n,r.npv]),dots:true}],xlabel:'Number of wells',ylabel:'NPV, $M',h:300,xmin:0,ymax:(()=>{const v=spRows.filter(r=>isFinite(r.npv)).map(r=>r.npv),hi=Math.max(...v,0),lo=Math.min(...v,0);return hi+0.12*(hi-lo||1);})(),
+      marks:[...(best?[{x:best.n,y:best.npv,label:'optimum '+best.n,color:'#00995A'}]:[]),...(sel&&sel!==best?[{x:sel.n,y:sel.npv,label:'current '+sel.n,color:'#F07A10'}]:[])],hlines:[{y:0,label:'',color:'#4C535C'}]});
+    const ser=[];if(best)ser.push({name:`Optimum, ${best.n} wells`,color:'#00995A',pts:best.prof.map(p=>[p[0],p[1]/1000])});
+    if(sel&&sel!==best)ser.push({name:`Current, ${sel.n} wells`,color:'#F07A10',pts:sel.prof.map(p=>[p[0],p[1]/1000])});
+    const r1=spRows[0];if(r1!==best&&r1!==sel)ser.push({name:'1 well',color:'#4C535C',dash:'5 4',pts:r1.prof.map(p=>[p[0],p[1]/1000])});
+    chart($('chProf'),{series:ser,xlabel:'Years from first production',ylabel:G?'Field gas rate, MMscf/d':'Field oil rate, thousand STB/d',ymin:0,h:280,xmin:0});
+    let tb=G?`<tr><th>Wells</th><th>Equiv. spacing</th><th>Area/well, acres</th><th>Open-flow potential/well, MMscf/d</th><th>Initial rate/well, MMscf/d</th><th>Peak field rate, MMscf/d</th><th>Recovered in ${fmt(P.life)} yrs, Bcf</th><th>Recovery, % GIIP</th><th>Time to 80% of technical</th><th>Capex, $M</th><th>NPV, $M</th></tr>`
+      :`<tr><th>Wells</th><th>Equiv. spacing</th><th>Area/well, acres</th><th>PI, STB/d/psi</th><th>Initial rate/well, STB/d</th><th>Peak field rate, STB/d</th><th>Recovered in ${fmt(P.life)} yrs, MMstb</th><th>Recovery, % STOIIP</th><th>Time to 80%</th><th>Capex, $M</th><th>NPV, $M</th></tr>`;
+    spRows.forEach(r=>{tb+=`<tr class="${r===best?'opt':(r===sel?'sel':'')}"><td>${r.n}</td><td>${L(r.spacing)}</td><td>${sig(r.Aw/43560)}</td><td>${G?sig(r.qi/1000):sig(r.J)}</td><td>${G?sig(r.q0/1000):fmt(r.q0)}</td><td>${G?sig(r.peak/1000):fmt(r.peak)}</td><td>${sig(r.cum/1e6)}</td><td>${fmt(r.cum/r.inPlace*100,1)}</td><td>${r.t80===null?'–':sig(r.t80,2)+' yrs'}</td><td>${fmt(r.capex,1)}</td><td>${fmt(r.npv,1)}</td></tr>`;});
+    $('tblSp').innerHTML=tb;
+  }
+}
+let tmr=null;function schedule(){clearTimeout(tmr);tmr=setTimeout(render,120);}
+document.querySelectorAll('aside input').forEach(el=>el.addEventListener('input',()=>{if(el.id==='t'){const v=num('t');if(v>0)$('tslide').value=Math.log10(v);}schedule();}));
+$('tslide').addEventListener('input',()=>{const v=Math.pow(10,parseFloat($('tslide').value));$('t').value=+v.toPrecision(3);schedule();});
+document.querySelectorAll('#tabs button').forEach(b=>b.addEventListener('click',()=>{document.querySelectorAll('#tabs button').forEach(x=>x.classList.toggle('on',x===b));['field','well','spacing','method'].forEach(t=>$('tab-'+t).classList.toggle('hide',t!==b.dataset.tab));render();}));
+document.querySelectorAll('#unitSeg button').forEach(b=>b.addEventListener('click',()=>{
+  const u=b.dataset.u;if(u===lenUnit)return;
+  document.querySelectorAll('input[data-len]').forEach(el=>{const v=parseFloat(el.value);if(isFinite(v))el.value=+(u==='m'?v*M_PER_FT:v/M_PER_FT).toPrecision(4);});
+  document.querySelectorAll('.lu').forEach(s=>s.textContent=u);lenUnit=u;
+  document.querySelectorAll('#unitSeg button').forEach(x=>x.classList.toggle('on',x===b));render();
+}));
+document.querySelectorAll('#fluidSeg button').forEach(b=>b.addEventListener('click',()=>{fluidMode=b.dataset.f;document.body.classList.toggle('gas',fluidMode==='gas');document.querySelectorAll('#fluidSeg button').forEach(x=>x.classList.toggle('on',x===b));render();}));
+$('csv').addEventListener('click',()=>{
+  const P=readP();const G=fluidMode==='gas';const h=G?['wells','spacing_ft','spacing_m','area_per_well_acres','open_flow_potential_mmscfd','initial_rate_per_well_mmscfd','peak_field_rate_mmscfd','recovered_bcf','recovery_pct_giip','time_to_80pct_yrs','capex_musd','npv_musd']:['wells','spacing_ft','spacing_m','area_per_well_acres','PI_stb_d_psi','initial_rate_per_well_stb_d','peak_field_rate_stb_d','recovered_mmstb','recovery_pct_stoiip','time_to_80pct_yrs','capex_musd','npv_musd'];
+  const lines=[h.join(',')].concat(spRows.map(r=>[r.n,r.spacing.toFixed(0),(r.spacing*M_PER_FT).toFixed(0),(r.Aw/43560).toFixed(1),(G?(r.qi/1000).toFixed(2):r.J.toFixed(3)),(G?(r.q0/1000).toFixed(2):r.q0.toFixed(0)),(G?(r.peak/1000).toFixed(2):r.peak.toFixed(0)),(r.cum/1e6).toFixed(3),(r.cum/r.inPlace*100).toFixed(1),r.t80===null?'':r.t80.toFixed(2),r.capex.toFixed(1),r.npv.toFixed(2)].join(',')));
+  const txt=lines.join('\n').replace(/,/g,'\t');
+  navigator.clipboard.writeText(txt).then(()=>{$('csv').textContent='Copied';setTimeout(()=>$('csv').textContent='Copy table for Excel',1800);}).catch(()=>{$('csv').textContent='Copy blocked by browser';});
+});
+window.addEventListener('resize',schedule);
+render();
+</script>
+</body>
+</html>
